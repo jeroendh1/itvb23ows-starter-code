@@ -1,5 +1,5 @@
 <?php
-
+// ob_start();
 session_start();
 
 include_once 'util.php';
@@ -27,11 +27,12 @@ elseif (array_sum($hand) <= 8 && $hand['Q']) {
     $_SESSION['player'] = 1 - $_SESSION['player'];
     $db = include 'database.php';
     $stmt = $db->prepare('insert into moves (game_id, type, move_from, move_to, previous_id, state) values (?, "play", ?, ?, ?, ?)');
-    $stmt->bind_param('issis', $_SESSION['game_id'], $piece, $to, $_SESSION['last_move'], get_state());
+    $state = get_state();
+    $stmt->bind_param('issis', $_SESSION['game_id'], $piece, $to, $_SESSION['last_move'], $state);
     $stmt->execute();
     $_SESSION['last_move'] = $db->insert_id;
 }
 
 header('Location: index.php');
-
+// ob_end_flush();
 ?>
