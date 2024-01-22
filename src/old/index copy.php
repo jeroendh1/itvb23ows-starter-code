@@ -15,6 +15,14 @@
     foreach ($GLOBALS['OFFSETS'] as $pq) {
         foreach (array_keys($board) as $pos) {
             $pq2 = explode(',', $pos);
+            
+            $possible_pos = ($pq[0] + $pq2[0]).','.($pq[1] + $pq2[1]);
+
+            if (in_array($possible_pos, array_keys($board)) or !hasNeighBour($possible_pos, $board) or (array_sum($hand) < 11 && !neighboursAreSameColor($player, $possible_pos, $board))){   
+                echo ' in',  $possible_pos ;
+                continue;
+            }
+
             $to[] = ($pq[0] + $pq2[0]).','.($pq[1] + $pq2[1]);
         }
     }
@@ -122,13 +130,15 @@
             ?>
         </div>
         <div class="turn">
-            Turn: <?php if ($player == 0) echo "White"; else echo "Black"; ?>
+            Turn: <?php print_r( array_keys($board));if ($player == 0) echo "White"; else echo "Black"; ?>
         </div>
         <form method="post" action="play.php">
             <select name="piece">
                 <?php
                     foreach ($hand[$player] as $tile => $ct) {
-                        echo "<option value=\"$tile\">$tile</option>";
+                        if ($ct){
+                            echo "<option value=\"$tile\">$tile</option>";
+                        }
                     }
                 ?>
             </select>

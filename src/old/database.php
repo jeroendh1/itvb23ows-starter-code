@@ -1,5 +1,5 @@
 <?php
-
+ob_start();
 function get_state() {
     return serialize([$_SESSION['hand'], $_SESSION['board'], $_SESSION['player']]);
 }
@@ -10,7 +10,7 @@ function set_state($state) {
     $_SESSION['board'] = $b;
     $_SESSION['player'] = $c;
 }
-
-return new mysqli('localhost', 'root', '', 'hive');
+ob_end_flush();
+return new mysqli('db', 'root', '', 'hive');
 
 ?>
