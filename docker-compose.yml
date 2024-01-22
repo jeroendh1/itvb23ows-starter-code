@@ -3,12 +3,12 @@ services:
     php-environment:
         container_name: web
         build:
-            context: ./app
+            context: ./src
             dockerfile: Dockerfile
         depends_on:
             - db
         volumes:
-            - ./app:/var/www/html/
+            - ./src:/var/www/html/
         ports:
             - 8000:80
     db:

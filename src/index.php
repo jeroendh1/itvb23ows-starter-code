@@ -11,7 +11,7 @@ $to = $game->getPossiblePositions();
 
 // Process form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['play'])) {
+    if (isset($_POST['play']) && isset($_POST['piece'])) {
         $game->play($_POST['piece'], $_POST['to']);
     } elseif (isset($_POST['from']) && isset($_POST['to'])) {
         $game->move($_POST['from'], $_POST['to']);
@@ -109,15 +109,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="post" action="index.php">
         <select name="from">
             <?php
-                // PHP code to render the player's pieces
-                foreach (array_keys($game->board) as $pos) {
+                // To render the player's pieces
+                foreach ($game->getPlayerPositions() as $pos) {
                     echo "<option value=\"$pos\">$pos</option>";
                 }
             ?>
         </select>
         <select name="to">
             <?php
-                // PHP code to render the available positions for moving
+                // To render the available positions for moving
                 foreach ($game->getPossiblePositions() as $pos) {
                     echo "<option value=\"$pos\">$pos</option>";
                 }
