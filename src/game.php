@@ -149,7 +149,7 @@ class Game
             $this->setError("board position has no neighbor");
         } elseif (array_sum($this->hand[$this->player]) < 11 && !neighboursAreSameColor( $this->player, $to, $this->board)) {
             $this->setError("Board position has opposing neighbor");
-        } elseif (array_sum($this->hand[$this->player]) <= 8 && $this->hand[$this->player]['Q']) {
+        } elseif ($piece != 'Q' && array_sum($this->hand[$this->player]) <= 8 && $this->hand[$this->player]['Q']) {
             $this->setError('Must play queen bee');
         } else { $valid = true;}
 
