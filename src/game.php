@@ -84,17 +84,14 @@ class Game
         $this->player = 1 - $this->player;
         $this->updateGameState('pass', null, null);
     }
-    public function getPossiblePositions(): array
+    public function getPositions(): array
     {
         $to = [];
         foreach (self::OFFSET as $pq) {
             foreach (array_keys($this->board) as $pos) {
                 $pq2 = explode(',', $pos);
-                $possible = ($pq[0] + $pq2[0]).','.($pq[1] + $pq2[1]);
-                
-                if  ( $this->validatePosition($possible)) {
-                    $to[] =$possible;
-                }
+                $to[] = ($pq[0] + $pq2[0]).','.($pq[1] + $pq2[1]);
+                 
             }
         }
         $to = array_unique($to);
@@ -106,17 +103,27 @@ class Game
         return $to;
     }
 
+    public function getPossiblePositions(){
+        $possible = [];
+        foreach ($this->getPositions() as $to){
+            if  ( $this->validatePosition($to)) {
+                $possible[] = $to;
+            }
+        }
+        return $possible;
+    }
+
     public function getPlayerPositions(): array
     {
-        $playerOnePositions = [];
+        $playerPositions = [];
 
         foreach ($this->board as $key => $value) {
             if (isset($value[0][0]) && $value[0][0] == $this->player) {
-                $playerOnePositions[] = $key;
+                $playerPositions[] = $key;
             }
         }
         
-        return $playerOnePositions;
+        return $playerPositions;
     }
     public function validatePosition($pos){
         if (isset($this->board[$pos])) {
@@ -129,6 +136,8 @@ class Game
         }
         return true;
     }
+
+   
     public function validatePlay($piece, $to)
     {   
         $valid = false;
@@ -162,13 +171,12 @@ class Game
             $this->setError("Queen bee is not played");
         } else {
             $board = $this->board;
-            $tile = array_pop($board[$from]);
+            $tile = array_pop($board[$from]);          
             if (!hasNeighbour($to, $board) ) {
                 $this->setError("Move would split hive");
             } elseif (isset($board[$to]) && $tile[1] != "B") {
                 $this->setError("Tile not empty");
-            } elseif ( ($tile[1] == "Q" || $tile[1] == "B")
-             && !slide($board,$from, $to))  {
+            } elseif ( ($tile[1] == "Q" || $tile[1] == "B") && !slide($this->board,$from, $to))  {
                 $this->setError("Tile must slide");
             } else {
                 return true;

@@ -6,15 +6,13 @@ $db = new mysqli('db', 'root', '', 'hive');
 $dbHandler = new DbHandler($db);
 $game = new Game($dbHandler);
 
-// Get possible positions
-$to = $game->getPossiblePositions();
-
 // Process form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['play']) && isset($_POST['piece'])) {
         $game->play($_POST['piece'], $_POST['to']);
     } elseif (isset($_POST['from']) && isset($_POST['to'])) {
         $game->move($_POST['from'], $_POST['to']);
+        // header('Location: ./index.php');
     } elseif (isset($_POST['pass'])) {
         $game->pass();
     } elseif (isset($_POST['restart'])) {
@@ -118,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <select name="to">
             <?php
                 // To render the available positions for moving
-                foreach ($game->getPossiblePositions() as $pos) {
+                foreach ($game->getPositions() as $pos) {
                     echo "<option value=\"$pos\">$pos</option>";
                 }
             ?>

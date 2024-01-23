@@ -7,7 +7,8 @@ use PHPUnit\Framework\TestCase;
 // -2,0     -1,0     0,0     1,0
 //     -2,1     -1,1     0,1    1,1 
 // 
-// 
+// -1,0 0,-1 -1,1
+
 // 
 class GameTest extends TestCase
 {
@@ -124,6 +125,23 @@ class GameTest extends TestCase
         $this->assertIsArray($result);
         $this->assertNotEmpty($result);
         $this->assertCount(4, $result); 
+    }
+// ==========================================================================
+//                          test bug 2
+    public function testLegalMoveQueenToOpponentNeighbor()
+    {
+        // Set up the game state
+        $this->game->board = [
+            '0,0' => [[0, 'Q']],  // White queen at (0, 0)
+            '1,0' => [[1, 'Q']]   // Black queen at (1, 0)
+        ];
+        $this->game->player = 0;
+        $this->game->hand = [0 => ['Q' => 0, 'B' => 2, 'S' => 2, 'A' => 3, 'G' => 3]];
+
+        $result = $this->game->validateMove('0,0', '0,1');
+
+        // Assert
+        $this->assertTrue($result);
     }
 
 
