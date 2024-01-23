@@ -144,6 +144,40 @@ class GameTest extends TestCase
         $this->assertTrue($result);
     }
 
+    public function testIllegalFourthMoveAfterPlacingThreeNonQueenPieces()
+    {
+        // Set up the game state
+        $this->game->board = [
+            '0,0' => [[0, 'B']],  
+            '0,1' => [[0, 'S']],  
+            '0,2' => [[0, 'A']],  
+        ];
+        $this->game->player = 0;
+        $this->game->hand = [0 => ['Q' => 1, 'B' => 1, 'S' => 1, 'A' => 2, 'G' => 3]];
+
+       
+        $result = $this->game->validatePlay('G', '0,3');
+
+        // Assert
+        $this->assertFalse($result);
+    }
+    public function testLegalFourthPlayQueenPieceAfterThreeNonQueenPieces()
+    {
+        // Set up the game state
+        $this->game->board = [
+            '0,0' => [[0, 'B']],  // White player placed a non-queen piece
+            '0,1' => [[0, 'S']],  // White player placed another non-queen piece
+            '0,2' => [[0, 'A']],  // White player placed a third non-queen piece
+        ];
+        $this->game->player = 0;
+        $this->game->hand = [0 => ['Q' => 1, 'B' => 1, 'S' => 1, 'A' => 2, 'G' => 3]];
+
+        // Attempt an illegal move where white player tries to play a fourth piece
+        $result = $this->game->validatePlay('Q', '0,3');
+
+        // Assert
+        $this->assertTrue($result);
+    }
 
 }
    
