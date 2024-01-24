@@ -53,6 +53,58 @@ function slide($board, $from, $to) {
     }
     return min(len($board[$common[0]]), len($board[$common[1]])) <= max(len($board[$from]), len($board[$to]));
 }
+    function GrasshopperMove($from, $to, $board)
+    {
+        $fromExploded = explode(',', $from);
+        $toExploded = explode(',', $to);
+    
+        // Calculate the direction of movement
+        $xDiff = $toExploded[0] - $fromExploded[0];
+        $yDiff = $toExploded[1] - $fromExploded[1];
+        
+        // Validate that the movement is either horizontal, vertical, or diagonal
+        if (!($xDiff == 0 || $yDiff == 0 || $xDiff == $yDiff || $xDiff == -$yDiff)) {
+            return false;
+        }
+    
+        // Determine the direction of movement based on differences
+        if ($xDiff > 0) {
+            $xDirection = 1;
+        } elseif ($xDiff < 0) {
+            $xDirection = -1;
+        } else {
+            $xDirection = 0;
+        }
+
+        if ($yDiff > 0) {
+            $yDirection = 1;
+        } elseif ($yDiff < 0) {
+            $yDirection = -1;
+        } else {
+            $yDirection = 0;
+        }
+
+        $p = $fromExploded[0] + $xDirection;
+        $q = $fromExploded[1] + $yDirection;
+    
+        $jumpedOver = false; 
+        // Check if the Grasshopper moves to a neighboring position without jumping over a stone
+        if (!isset($board["$p,$q"])) {
+            return false;
+        }
+    
+        while ($p != $toExploded[0] || $q != $toExploded[1]) {
+            if (isset($board["$p,$q"])) {
+               
+                // Grasshopper jumps over at least one stone
+                $jumpedOver = true;
+            }
+            $p += $xDirection;
+            $q += $yDirection;
+        }
+    
+        return $jumpedOver;
+    }
 
 
 ?>
