@@ -34,13 +34,20 @@ class DbHandler
         return $this->db->insert_id;
     }
 
-    public function undoSet(){
-        $stmt = $this->db->prepare('SELECT * FROM moves WHERE id = '.$_SESSION['last_move']);
+    public function getMove($id){
+        $stmt = $this->db->prepare('SELECT * FROM moves WHERE id = ? and game_id = ?');
+        $stmt->bind_param('ii', $id, $_SESSION['game_id']);
         $stmt->execute();
        
         return $stmt->get_result()->fetch_array();
     }
     
+    public function deleteMove($id){
+        $stmt = $this->db->prepare('DELETE FROM moves WHERE id = ?');
+        $stmt->bind_param('i',$id);
+        $stmt->execute();
+    }
+
     public function saveGame()
     {
         $stmt = $this->db->prepare('INSERT INTO ' . self::GAMES_TABLE . ' VALUES ()');

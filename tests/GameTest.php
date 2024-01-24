@@ -126,8 +126,7 @@ class GameTest extends TestCase
         $this->assertNotEmpty($result);
         $this->assertCount(4, $result); 
     }
-// ==========================================================================
-//                          test bug 2
+
     public function testLegalMoveQueenToOpponentNeighbor()
     {
         // Set up the game state
@@ -161,6 +160,7 @@ class GameTest extends TestCase
         // Assert
         $this->assertFalse($result);
     }
+
     public function testLegalFourthPlayQueenPieceAfterThreeNonQueenPieces()
     {
         // Set up the game state
@@ -178,6 +178,32 @@ class GameTest extends TestCase
         // Assert
         $this->assertTrue($result);
     }
+    
+    public function testUndoFunctionRevertsToPreviousState()
+    {
+        $this->game->play('Q', '0,0');
+        $this->game->play('Q', '1,0');
+
+        // Save the current state before undoing
+        $beforeUndo = [
+            'board' => $this->game->board,
+            'player' => $this->game->player,
+            'hand' => $this->game->hand,
+            'last_move' => $_SESSION['last_move']
+        ];
+        // Perform a move
+        $this->game->move('0,0', '0,1');
+
+        // Perform undo
+        $this->game->undo();
+       
+        // Assert that the state has been reverted to the state before the move
+        $this->assertEquals($beforeUndo['board'], $this->game->board);
+        $this->assertEquals($beforeUndo['player'], $this->game->player);
+        $this->assertEquals($beforeUndo['hand'], $this->game->hand);
+        $this->assertEquals($beforeUndo['last_move'], $_SESSION['last_move']);
+    }
+
 
 }
    

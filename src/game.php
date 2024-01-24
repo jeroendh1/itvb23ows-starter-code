@@ -27,9 +27,10 @@ class Game
             // exit(0);
         }
 
-        $this->board = $_SESSION['board'];
-        $this->player = $_SESSION['player'];
-        $this->hand = $_SESSION['hand'];
+        $this->restoreGameState();
+        // $this->board = $_SESSION['board'];
+        // $this->player = $_SESSION['player'];
+        // $this->hand = $_SESSION['hand'];
     }
 
     public function restart()
@@ -184,24 +185,31 @@ class Game
         }
         return false;
     }
+    
     public function undo()
     {
-        // Game logic for undoing
-        $result = $this->dbHandler->undoSet();
-        $_SESSION['last_move'] = $result[5];
-        list($a, $b, $c) = unserialize($result[6]);
-        print_r( $result[5]);
-        print_r( $result[6]);
-        // $_SESSION['board'] = $a;
-        // $_SESSION['hand'] = $b;
-        // $_SESSION['player'] = $c;
+        $previousMoveId = $_SESSION['last_move'];
+        $previousMove = $this->dbHandler->getMove($previousMoveId);
 
-        // $this->updateGameState();
+        if (!empty($previousMove)) {
+            $result = $this->dbHandler->getMove($previousMove[5]);
+            $this->dbHandler->deleteMove($previousMoveId);
+
+            if (!$result) {
+                return $this->restart();
+            }
+
+            list($hand, $board, $player) = unserialize($result[6]);
+
+            $this->restoreGameState($board, $hand, $player, $previousMove[5]);
+        }
     }
+
     private function setError($message)
     {
         $_SESSION['error'] = $message;
     }
+
     private function updateGameState($type, $from, $to)
     {
         $_SESSION['board'] = $this->board;
@@ -213,6 +221,14 @@ class Game
     private function getState()
     {
         return serialize([$this->hand, $this->board, $this->player]);
+    }
+
+    private function restoreGameState($board = null, $hand = null, $player = null, $lastMove = null)
+    {
+        $this->board = $board ?? $_SESSION['board'];
+        $this->hand = $hand ?? $_SESSION['hand'];
+        $this->player = $player ?? $_SESSION['player'];
+        $_SESSION['last_move'] = $lastMove ?? $_SESSION['last_move'];
     }
   
     public function getCurrentPlayerColor()
