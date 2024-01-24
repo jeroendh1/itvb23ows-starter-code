@@ -204,6 +204,34 @@ class GameTest extends TestCase
         $this->assertEquals($beforeUndo['last_move'], $_SESSION['last_move']);
     }
 
+    // 
+    // Tests: Feature 1 implementation of the GrassHopper
+    // 
+    public function testMoveGrassHopperValidMoveReturnTrue()
+    {
+       
+        $this->game->play('Q', '0,0');  // White player
+        $this->game->play('Q', '0,1');
+        $this->game->play('G', '-1,0');  // White player
+        $this->game->play('G', '0,2');
+
+        $result = $this->game->validateMove('-1,0', '1,0');
+        $this->assertTrue($result);
+    }
+
+    
+    public function testMoveGrassHopperInvalidMoveReturnFalse()
+    { 
+     
+        $this->game->play('Q', '0,0');  // White player
+        $this->game->play('Q', '0,1');
+        $this->game->play('G', '-1,0');  // White player
+        $this->game->play('G', '0,2');
+
+        $result = $this->game->validateMove('-1,0', '0,3');
+        $this->assertFalse($result);
+    }
+
 
 }
    

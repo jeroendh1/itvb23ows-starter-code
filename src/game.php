@@ -27,10 +27,10 @@ class Game
             // exit(0);
         }
 
-        $this->restoreGameState();
-        // $this->board = $_SESSION['board'];
-        // $this->player = $_SESSION['player'];
-        // $this->hand = $_SESSION['hand'];
+        // $this->restoreGameState();
+        $this->board = $_SESSION['board'];
+        $this->player = $_SESSION['player'];
+        $this->hand = $_SESSION['hand'];
     }
 
     public function restart()
@@ -179,13 +179,16 @@ class Game
                 $this->setError("Tile not empty");
             } elseif ( ($tile[1] == "Q" || $tile[1] == "B") && !slide($this->board,$from, $to))  {
                 $this->setError("Tile must slide");
+            } 
+            elseif ( ($tile[1] == "G") && !GrasshopperMove($from, $to, $this->board))  {
+                $this->setError("Tile must jump over at least one tile");
             } else {
                 return true;
             }
         }
         return false;
     }
-    
+
     public function undo()
     {
         $previousMoveId = $_SESSION['last_move'];
@@ -200,8 +203,11 @@ class Game
             }
 
             list($hand, $board, $player) = unserialize($result[6]);
-
-            $this->restoreGameState($board, $hand, $player, $previousMove[5]);
+            
+            $this->board = $_SESSION['board'] = $board;
+            $this->hand =  $_SESSION['hand'] = $hand ;
+            $this->player = $_SESSION['player'] = $player ;
+            $_SESSION['last_move'] =  $previousMove[5];
         }
     }
 
