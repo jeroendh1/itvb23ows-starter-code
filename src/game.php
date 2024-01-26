@@ -172,7 +172,9 @@ class Game
             $this->setError("Queen bee is not played");
         } else {
             $board = $this->board;
-            $tile = array_pop($board[$from]);          
+            $tile = array_pop($board[$from]);
+            unset($board[$from]);
+
             if (!hasNeighbour($to, $board) ) {
                 $this->setError("Move would split hive");
             } elseif (isset($board[$to]) && $tile[1] != "B") {
@@ -182,6 +184,9 @@ class Game
             } 
             elseif ( ($tile[1] == "G") && !GrasshopperMove($from, $to, $this->board))  {
                 $this->setError("Tile must jump over at least one tile");
+            }
+            elseif ( ($tile[1] == "A") && !soldierAntMove($from, $to, $this->board))  {
+                $this->setError("Tile must slide at least one tile");
             } else {
                 return true;
             }
