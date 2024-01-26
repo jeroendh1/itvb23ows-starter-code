@@ -105,6 +105,41 @@ function slide($board, $from, $to) {
     
         return $jumpedOver;
     }
+    function SoldierAntMove($from, $to, $board)
+    {
+        // Initialize an array to track visited positions
+        $visited = [];
 
+        // Initialize an array to store positions to be explored
+        $positionsToExplore = [$from];
+    
+        while (!empty($positionsToExplore)) {
+            // Get the next position to explore
+            $current = array_shift($positionsToExplore);
+    
+            //If the current position is the destination position, return true
+            if ($current == $to) {
+                return true;
+            }
+    
+            // Add the current position to the visited array
+            $visited[$current] = true;
+    
+            // Get possible positions to slide to
+            foreach ($GLOBALS['OFFSETS'] as $pq) {
+                $p = explode(',', $current)[0] + $pq[0];
+                $q = explode(',', $current)[1] + $pq[1];
+                $position = "$p,$q";
 
+                // Check if the position is empty, not visited, and has neighbors
+                if (!isset($board[$position]) && !isset($visited[$position]) && hasNeighbour($position, $board)) {
+                    // Add the position to positionsToExplore
+                    $positionsToExplore[] = $position;
+                }
+            }
+        }
+        return false;
+    }
+    
+    
 ?>
