@@ -105,6 +105,7 @@ function slide($board, $from, $to) {
     
         return $jumpedOver;
     }
+    
     function SoldierAntMove($from, $to, $board)
     {
         // Initialize an array to track visited positions
@@ -140,6 +141,39 @@ function slide($board, $from, $to) {
         }
         return false;
     }
+    function spiderMove($from, $to, $board)
+    {   unset($board[$from]);
+        $visited = [];
+        $positionsToExplore = [[$from, 0]]; // Include distance traveled
+        $distanceLimit = 3;
+    
+        while (!empty($positionsToExplore)) {
+            list($currentTile, $distance) = array_shift($positionsToExplore);
+            
+            // Add the current position to the visited array
+            $visited[$currentTile] = true;
+            
+            // Check if the current position is the destination and distance is exactly 3
+            if ($currentTile === $to && $distance === $distanceLimit) {
+                return true;
+            }
+            
+            // Get adjacent legal board positions relative to the current tile
+            foreach ($GLOBALS['OFFSETS'] as $pq) {
+                $p = explode(',', $currentTile)[0] + $pq[0];
+                $q = explode(',', $currentTile)[1] + $pq[1];
+                $position = "$p,$q";
+                
+                // Check if the position is not visited, not blocked, has neighbors, and within distance limit
+                if (!isset($visited[$position]) && !isset($board[$position]) && hasNeighbour($position, $board) && $distance + 1 <= $distanceLimit) {
+                    $positionsToExplore[] = [$position, $distance + 1]; // Update distance traveled
+                }
+            }
+        }
+    
+        return false;
+    }
+    
     
     
 ?>
