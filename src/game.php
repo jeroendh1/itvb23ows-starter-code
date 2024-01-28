@@ -187,6 +187,9 @@ class Game
             }
             elseif ( ($tile[1] == "A") && !soldierAntMove($from, $to, $this->board))  {
                 $this->setError("Tile must slide at least one tile");
+            }
+            elseif ( ($tile[1] == "S") && !spiderMove($from, $to, $this->board))  {
+                $this->setError("Tile must move 3 times");
             } else {
                 return true;
             }
