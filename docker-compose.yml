@@ -21,3 +21,11 @@ services:
           MYSQL_DATABASE: hive
         ports:
             - "9906:3306"
+    ai:
+        container_name: ai
+        build:
+            context: ./ai/
+            dockerfile: Dockerfile
+        command: flask --app app run -h 0.0.0.0 --debug
+        ports:
+            - "5000:5000"

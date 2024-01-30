@@ -1,10 +1,11 @@
 <?php
 include_once 'game.php';
 include_once 'databaseHandler.php';
+include_once 'hiveAI.php';
 
 $db = new mysqli('db', 'root', '', 'hive');
 $dbHandler = new DbHandler($db);
-$game = new Game($dbHandler);
+$game = new Game($dbHandler, new HiveAI);
 
 // Process form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -20,6 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('index.php');
     } elseif (isset($_POST['undo'])) {
         $game->undo();
+    }
+    elseif (isset($_POST['AI'])) {
+        $game->AI();
     }
 }
 ?>
@@ -82,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <div class="turn">
         Turn: <?php echo $game->getCurrentPlayerColor(); ?>
+        <h2> <?php echo $game->hasWinner(); ?> </h2>
     </div>
     <form method="post" action="index.php">
         <select name="piece">
@@ -128,6 +133,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
     <form method="post" action="index.php">
         <input type="submit" name="restart" value="Restart">
+    </form>
+    <form method="post" action="index.php">
+        <input type="submit" name="AI" value="AI">
     </form>
     <strong><?php if (isset($_SESSION['error'])) echo($_SESSION['error']); unset($_SESSION['error']); ?></strong>
     <ol>

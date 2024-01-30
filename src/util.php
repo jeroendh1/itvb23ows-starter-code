@@ -174,6 +174,37 @@ function slide($board, $from, $to) {
         return false;
     }
     
+    function hasLostGame($board, $player): bool
+    {
+        foreach ($board as $pos => $tiles) {
+            $topTile = end($tiles);
+
+            // Check if the top tile belongs to the specified player and is a queen bee
+            if ($topTile[0] == $player && $topTile[1] == 'Q') {
+                $neighbourCount = 0;
+                $posCoordinates = explode(',', $pos);
     
+                foreach ($GLOBALS['OFFSETS'] as $offset) {
+                    // Calculate neighboring position coordinates
+                    $neighbourX = $posCoordinates[0] + $offset[0];
+                    $neighbourY = $posCoordinates[1] + $offset[1];
+                    $neighbourPos = $neighbourX . ',' . $neighbourY;
+    
+                    // Check if the neighboring position is occupied
+                    if (isset($board[$neighbourPos])) {
+                        $neighbourCount++;
+                    }
+                }
+                // Check if all six neighboring positions are occupied
+                if ($neighbourCount == 6) {
+                    return true; // Player has lost the game
+                }
+
+                // Stop further iterations if a queen bee belonging to the specified player is found
+                break;
+            }
+        }
+        return false; // Player has not lost the game
+    }
     
 ?>

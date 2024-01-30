@@ -15,10 +15,13 @@ class Game
     public $player;
     public $hand;
     private $dbHandler;
+    private $hiveAI;
 
-    public function __construct(DbHandler $dbHandler)
+    public function __construct(DbHandler $dbHandler, HiveAI $hiveAI)
     {
         $this->dbHandler = $dbHandler;
+        $this->hiveAI = $hiveAI;
+
         session_start();
         include_once 'util.php';
 
@@ -27,11 +30,11 @@ class Game
             // exit(0);
         }
 
-        // $this->restoreGameState();
         $this->board = $_SESSION['board'];
         $this->player = $_SESSION['player'];
         $this->hand = $_SESSION['hand'];
-    }
+
+    }   
 
     public function restart()
     {
@@ -86,6 +89,44 @@ class Game
             return;
         }
         $this->setError("Not allowed to pass");
+    }
+
+    public function AI()
+    {
+        $numberOfMoves = $this->dbHandler->getGameMoves($_SESSION['game_id']);
+        $aiMove = $this->hiveAI->suggestMove($numberOfMoves->num_rows, $this->hand, $this->board);
+        
+        if (!isset($aiMove)){
+            return;
+        }
+        // Play, move or pass without validation 
+        if ($aiMove[0] == 'play'){
+            $this->board[$aiMove[2]] = [[$this->player, $aiMove[1]]];
+            $this->hand[$this->player][$aiMove[1]]--;
+        }
+        else if ($aiMove[0] == 'move'){
+            $tile = array_pop($this->board[$aiMove[1]]);
+            $this->board[$aiMove[2]] = [$tile];
+            unset($this->board[$aiMove[1]]);
+        }
+        $this->player = 1 - $this->player;
+        $this->updateGameState(...$aiMove);
+    }
+
+    public function hasWinner()
+    {
+        $playerZeroLost = hasLostGame($this->board, 0);
+        $playerOneLost = hasLostGame($this->board, 1);
+        
+        if ($playerOneLost && $playerZeroLost){
+            return "Draw";
+        }
+        else if($playerZeroLost){
+            return "Black WINS!";
+        }
+        else if($playerOneLost){
+            return "White WINS!";
+        }
     }
 
     public function getPositions(): array
@@ -143,7 +184,7 @@ class Game
 
    
     public function validatePlay($piece, $to)
-    {   
+    {  
         $valid = false;
         if (!$this->hand[$this->player][$piece]) {
             $this->setError("Player does not have tile");
@@ -263,13 +304,6 @@ class Game
         return serialize([$this->hand, $this->board, $this->player]);
     }
 
-    private function restoreGameState($board = null, $hand = null, $player = null, $lastMove = null)
-    {
-        $this->board = $board ?? $_SESSION['board'];
-        $this->hand = $hand ?? $_SESSION['hand'];
-        $this->player = $player ?? $_SESSION['player'];
-        $_SESSION['last_move'] = $lastMove ?? $_SESSION['last_move'];
-    }
   
     public function getCurrentPlayerColor()
     {
