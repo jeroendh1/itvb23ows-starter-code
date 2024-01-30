@@ -51,7 +51,6 @@ class Game
         $_SESSION['game_id'] = $this->dbHandler->createNewGame();
     }
 
-
     public function play($piece, $to)
     {
         if(!$this->validatePlay($piece, $to)){
@@ -81,10 +80,14 @@ class Game
 
     public function pass()
     {
-        // $this->recordMove('pass', null, null);
-        $this->player = 1 - $this->player;
-        $this->updateGameState('pass', null, null);
+        if ($this->validatePass()){
+            $this->player = 1 - $this->player;
+            $this->updateGameState('pass', null, null);
+            return;
+        }
+        $this->setError("Not allowed to pass");
     }
+
     public function getPositions(): array
     {
         $to = [];
@@ -157,6 +160,29 @@ class Game
         return $valid;
     }
 
+    public function validatePass()
+    {  
+        // Check if there are any possible positions to play a piece to
+        if (count($this->getPossiblePositions()) > 0 && array_sum($this->hand[$this->player]) !== 0) {
+            return false; // Player cannot pass yet
+        }
+       
+        // Check if there are any valid moves the player can make with their current pieces on the board
+        foreach ($this->board as $pos => $tiles) {
+            if ($tiles[0][0] == $this->player) {
+                // Check each possible position on the board
+                foreach ($this->getPositions() as $to) {
+                    if ($this->validateMove($pos, $to)) {;
+                        return false; // Player cannot pass yet
+                    }
+                }
+            }
+        }
+        
+        return true; // Player can pass
+    }
+
+    
     public function validateMove($from, $to)
     {
         if (!isset($this->board[$from])) {
