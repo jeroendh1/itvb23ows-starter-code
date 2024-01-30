@@ -88,6 +88,22 @@ class Game
         $this->setError("Not allowed to pass");
     }
 
+    public function hasWinner()
+    {
+        $playerZeroLost = hasLostGame($this->board, 0);
+        $playerOneLost = hasLostGame($this->board, 1);
+        
+        if ($playerOneLost && $playerZeroLost){
+            return "Draw";
+        }
+        else if($playerZeroLost){
+            return "Black WINS!";
+        }
+        else if($playerOneLost){
+            return "White WINS!";
+        }
+    }
+
     public function getPositions(): array
     {
         $to = [];

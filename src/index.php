@@ -82,6 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <div class="turn">
         Turn: <?php echo $game->getCurrentPlayerColor(); ?>
+        <h2> <?php echo $game->hasWinner(); ?> </h2>
     </div>
     <form method="post" action="index.php">
         <select name="piece">
