@@ -232,7 +232,48 @@ class GameTest extends TestCase
         $this->assertFalse($result);
     }
 
+    public function testValidPassWithPossiblePlaysReturnsFalse(){
+        $this->game->play('Q', '0,0');  // White player
+        $this->game->play('Q', '0,1');
+        $this->game->play('G', '-1,0');  // White player
+        $this->game->play('G', '0,2');
 
+        $this->game->player = 0;
+        $this->game->hand = [0 => ['Q' => 0, 'B' => 1, 'S' => 1, 'A' => 2, 'G' => 2]];
+
+        $result = $this->game->validatePass();
+        $this->assertFalse($result);
+    }
+
+    public function testValidPassWithPossibleMovesReturnsFalse(){
+
+        $this->game->player = 1;
+        $this->game->hand = [1 => ['Q' => 0, 'B' => 0, 'S' => 0, 'A' => 0, 'G' => 0]];
+        $this->game->board = [
+            "-1,1" => [[1, 'G']],
+            "0,0" => [[0, "A"]],
+            "0,1" => [[1, 'A']],
+        ];
+        $result = $this->game->validatePass();
+        $this->assertFalse($result);
+    }
+
+    public function testValidPassWithNoPossibleMovesReturnsTrue(){
+
+        $this->game->player = 0;
+        $this->game->hand = [0 => ['Q' => 0, 'B' => 0, 'S' => 0, 'A' => 0, 'G' => 0]];
+        $this->game->board = [
+            "1,0" => [[1, 'S']],
+            "-1,0" => [[1, 'S']],
+            "-1,1" => [[1, 'G']],
+            "0,0" => [[0, "A"]],
+            "0,1" => [[1, 'A']],
+            "0,-1" => [[1, 'Q']],
+            "1,-1" => [[1, 'B']],
+        ];
+        $result = $this->game->validatePass();
+        $this->assertTrue($result);
+    }
 }
    
 
