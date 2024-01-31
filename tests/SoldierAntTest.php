@@ -3,14 +3,24 @@ use PHPUnit\Framework\TestCase;
 
 class SoldierAntTest extends TestCase
 {
-    private $db;
-    private $dbHandler;
+    private $dbHandlerMock;
     private $game; 
     public function setUp(): void {
-        
-        $this->db = new mysqli('localhost:9906', 'root', '', 'hive');
-        $this->dbHandler  = new DbHandler($this->db);
-        $this->game = new Game($this->dbHandler);
+        parent::setUp();
+
+        // Mock mysqli
+        $mysqliMock = $this->getMockBuilder(mysqli::class)
+        ->disableOriginalConstructor()
+        ->getMock();
+
+        // Mock DbHandler
+        $this->dbHandlerMock = $this->getMockBuilder(DbHandler::class)
+            ->setConstructorArgs([$mysqliMock])
+            ->getMock();
+
+        // Pass the mock DbHandler to the Game constructor
+        $this->game = new Game($this->dbHandlerMock , new HiveAI);
+        $this->game->restart();
     }
     
     public function testSoldierAntMoveToOppositPositionReturnsTrue()
