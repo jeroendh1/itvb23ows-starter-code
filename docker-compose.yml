@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+    php-environment:
+        container_name: web
+        build:
+            context: ./src
+            dockerfile: Dockerfile
+        depends_on:
+            - db
+        volumes:
+            - ./src:/var/www/html/
+        ports:
+            - 8000:80
+    db:
+        container_name: db
+        image: mysql
+        restart: always
+        environment:
+          MYSQL_ROOT_PASSWORD: ''
+          MYSQL_ALLOW_EMPTY_PASSWORD: true
+          MYSQL_DATABASE: hive
+        ports:
+            - "9906:3306"
+    ai:
+        container_name: ai
+        build:
+            context: ./ai/
+            dockerfile: Dockerfile
+        command: flask --app app run -h 0.0.0.0 --debug
+        ports:
+            - "5000:5000"

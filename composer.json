@@ -1,0 +1,11 @@
+{
+    "name": "vendor/name",
+    "description": "hive",
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    },
+    
+    "require": {}
+}
